@@ -1,0 +1,28 @@
+commit 92912923371be1ec55e4ae2573a48fe9b0f62826
+Author: Jeffrey Clark <h0tw1r3@users.noreply.github.com>
+Date:   Wed Jan 10 23:35:53 2024 -0600
+
+    (maint) add ubuntu 24.04 noble platform definitions
+
+diff --git a/configs/platforms/ubuntu-24.04-aarch64.rb b/configs/platforms/ubuntu-24.04-aarch64.rb
+new file mode 100644
+index 0000000..bd382ce
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-aarch64.rb
+@@ -0,0 +1,5 @@
++platform "ubuntu-24.04-aarch64" do |plat|
++  plat.inherit_from_default
++  packages = %w(git)
++  plat.provision_with "export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -qy --no-install-recommends #{packages.join(' ')}"
++end
+diff --git a/configs/platforms/ubuntu-24.04-amd64.rb b/configs/platforms/ubuntu-24.04-amd64.rb
+new file mode 100644
+index 0000000..c1a1719
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-amd64.rb
+@@ -0,0 +1,5 @@
++platform "ubuntu-24.04-amd64" do |plat|
++  plat.inherit_from_default
++  packages = %w(git)
++  plat.provision_with "export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -qy --no-install-recommends #{packages.join(' ')}"
++end

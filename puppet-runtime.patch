@@ -1,3 +1,12 @@
+diff --git a/.gitignore b/.gitignore
+index 669417c..90df2ab 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -9,3 +9,4 @@ ext/packaging
+ ext/build_metadata.json
+ pkg
+ *.swp
++ext/build_meta*.json
 diff --git a/configs/components/libicu.rb b/configs/components/libicu.rb
 index 203d803..9bb6cf8 100644
 --- a/configs/components/libicu.rb
@@ -238,19 +247,6 @@ index a471eec..ff692de 100644
    proj.setting(:cppflags, "-I#{proj.includedir} -D_FORTIFY_SOURCE=2")
    proj.setting(:cflags, '-fstack-protector-strong -fno-plt -O2')
    proj.setting(:ldflags, "-L#{proj.libdir} -Wl,-rpath=#{proj.libdir},-z,relro,-z,now")
-diff --git a/configs/projects/bolt-runtime.rb b/configs/projects/bolt-runtime.rb
-index a443eec..192ed94 100644
---- a/configs/projects/bolt-runtime.rb
-+++ b/configs/projects/bolt-runtime.rb
-@@ -227,7 +227,7 @@ project 'bolt-runtime' do |proj|
- 
-   # Components from puppet-runtime included to support apply on localhost
-   # Only bundle SELinux gem for RHEL,Centos,Fedora
--  if platform.is_el? || platform.is_fedora?
-+  if platform.is_el? || platform.is_fedora? || platform.is_debian?
-     proj.component 'ruby-selinux'
-   end
- 
 diff --git a/configs/projects/pe-bolt-server-runtime-2021.7.x.rb b/configs/projects/pe-bolt-server-runtime-2021.7.x.rb
 index 79b7a83..f2acc26 100644
 --- a/configs/projects/pe-bolt-server-runtime-2021.7.x.rb

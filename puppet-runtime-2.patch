@@ -1,0 +1,100 @@
+commit 5e815355dab1da198d2a94b58e9be08e9f5f3ff9
+Author: Jeffrey Clark <h0tw1r3@users.noreply.github.com>
+Date:   Wed Jan 10 20:11:25 2024 -0600
+
+    (maint) add ubuntu 24.04 platforms
+
+diff --git a/configs/components/_base-ruby-selinux.rb b/configs/components/_base-ruby-selinux.rb
+index 764c755..c542918 100644
+--- a/configs/components/_base-ruby-selinux.rb
++++ b/configs/components/_base-ruby-selinux.rb
+@@ -27,6 +27,12 @@ elsif platform.name.start_with?('debian-12')
+   pkg.sha256sum '77c294a927e6795c2e98f74b5c3adde9c8839690e9255b767c5fca6acff9b779'
+   pkg.url "https://github.com/SELinuxProject/selinux/releases/download/#{pkg.get_version}/libselinux-#{pkg.get_version}.tar.gz"
+   pkg.build_requires 'python3-distutils'
++elsif platform.name.start_with?('ubuntu-24')
++  # SELinux 3.5 is the minimum version available in Ubuntu 24 repos
++  pkg.version '3.5'
++  pkg.sha256sum '9a3a3705ac13a2ccca2de6d652b6356fead10f36fb33115c185c5ccdf29eec19'
++  pkg.url "https://github.com/SELinuxProject/selinux/releases/download/#{pkg.get_version}/libselinux-#{pkg.get_version}.tar.gz"
++  pkg.build_requires 'python3-setuptools'
+ else
+   pkg.version "2.9"
+   pkg.md5sum "bb449431b6ed55a0a0496dbc366d6e31"
+@@ -72,7 +78,7 @@ pkg.build do
+ 
+   if ruby_version =~ /^3/
+     # swig 4.1 generated interface does not need patching
+-    unless platform.name =~ /debian-12/
++    unless platform.name =~ /^(debian-12|ubuntu-24)/
+       steps << "#{platform.patch} --strip=0 --fuzz=0 --ignore-whitespace --no-backup-if-mismatch < ../selinuxswig_ruby_wrap.patch"
+     end
+   end
+diff --git a/configs/components/runtime-bolt.rb b/configs/components/runtime-bolt.rb
+index cbfaa5f..e8da7b3 100644
+--- a/configs/components/runtime-bolt.rb
++++ b/configs/components/runtime-bolt.rb
+@@ -13,7 +13,7 @@ component "runtime-bolt" do |pkg, settings, platform|
+     pkg.install_file "#{settings[:tools_root]}/bin/libgdbm_compat-4.dll", "#{settings[:ruby_bindir]}/libgdbm_compat-4.dll"
+     pkg.install_file "#{settings[:tools_root]}/bin/libiconv-2.dll", "#{settings[:ruby_bindir]}/libiconv-2.dll"
+     pkg.install_file "#{settings[:tools_root]}/bin/libffi-6.dll", "#{settings[:ruby_bindir]}/libffi-6.dll"
+-  elsif platform.is_macos? or platform.name =~ /sles-15|el-8|debian-10|ubuntu-20.04|ubuntu-22.04/ || platform.is_fedora?
++  elsif platform.is_macos? or platform.name =~ /sles-15|el-8|debian-10|ubuntu-2[024].04/ || platform.is_fedora?
+ 
+     # Do nothing for distros that have a suitable compiler do not use pl-build-tools
+ 
+diff --git a/configs/platforms/ubuntu-24.04-aarch64.rb b/configs/platforms/ubuntu-24.04-aarch64.rb
+new file mode 100644
+index 0000000..6622bc5
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-aarch64.rb
+@@ -0,0 +1,15 @@
++platform "ubuntu-24.04-aarch64" do |plat|
++  plat.inherit_from_default
++
++  packages = %w(
++    libbz2-dev
++    libreadline-dev
++    libselinux1-dev
++    gcc
++    swig
++    systemtap-sdt-dev
++    zlib1g-dev
++  )
++  plat.provision_with "export DEBIAN_FRONTEND=noninteractive && apt-get update -qq && apt-get install -qy --no-install-recommends #{packages.join(' ')}"
++  plat.provision_with "curl https://artifactory.delivery.puppetlabs.net/artifactory/api/gpg/key/public | apt-key add -" unless ['n', 'false'].include? ENV.fetch('VANAGON_USE_MIRRORS')
++end
+diff --git a/configs/platforms/ubuntu-24.04-amd64.rb b/configs/platforms/ubuntu-24.04-amd64.rb
+new file mode 100644
+index 0000000..1317cc8
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-amd64.rb
+@@ -0,0 +1,15 @@
++platform "ubuntu-24.04-amd64" do |plat|
++  plat.inherit_from_default
++
++  packages = %w(
++    libbz2-dev
++    libreadline-dev
++    libselinux1-dev
++    gcc
++    swig
++    systemtap-sdt-dev
++    zlib1g-dev
++  )
++  plat.provision_with "export DEBIAN_FRONTEND=noninteractive && apt-get update -qq && apt-get install -qy --no-install-recommends #{packages.join(' ')}"
++  plat.provision_with "curl https://artifactory.delivery.puppetlabs.net/artifactory/api/gpg/key/public | apt-key add -" unless ['n', 'false'].include? ENV.fetch('VANAGON_USE_MIRRORS')
++end
+diff --git a/configs/projects/bolt-runtime.rb b/configs/projects/bolt-runtime.rb
+index a443eec..192ed94 100644
+--- a/configs/projects/bolt-runtime.rb
++++ b/configs/projects/bolt-runtime.rb
+@@ -227,7 +227,7 @@ project 'bolt-runtime' do |proj|
+ 
+   # Components from puppet-runtime included to support apply on localhost
+   # Only bundle SELinux gem for RHEL,Centos,Fedora
+-  if platform.is_el? || platform.is_fedora?
++  if platform.is_el? || platform.is_fedora? || platform.is_debian?
+     proj.component 'ruby-selinux'
+   end
+ 

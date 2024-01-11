@@ -1,0 +1,48 @@
+diff --git a/configs/components/pxp-agent.rb b/configs/components/pxp-agent.rb
+index dcd0c96..e5bce5a 100644
+--- a/configs/components/pxp-agent.rb
++++ b/configs/components/pxp-agent.rb
+@@ -78,6 +78,7 @@ component 'pxp-agent' do |pkg, settings, platform|
+   else
+     # These platforms use the default OS toolchain, rather than pl-build-tools
+     cmake = 'cmake'
++    pkg.apply_patch 'patches/pxp-agent/gcc-13.patch'
+     toolchain = ''
+     special_flags += " -DCMAKE_CXX_FLAGS='#{settings[:cflags]} -Wno-deprecated -Wimplicit-fallthrough=0' "
+     special_flags += ' -DENABLE_CXX_WERROR=OFF ' unless platform.name =~ /sles-15/
+diff --git a/configs/platforms/ubuntu-24.04-aarch64.rb b/configs/platforms/ubuntu-24.04-aarch64.rb
+new file mode 100644
+index 0000000..9c9a7ce
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-aarch64.rb
+@@ -0,0 +1,3 @@
++platform "ubuntu-24.04-aarch64" do |plat|
++  plat.inherit_from_default
++end
+diff --git a/configs/platforms/ubuntu-24.04-amd64.rb b/configs/platforms/ubuntu-24.04-amd64.rb
+new file mode 100644
+index 0000000..7d253f1
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-amd64.rb
+@@ -0,0 +1,3 @@
++platform "ubuntu-24.04-amd64" do |plat|
++  plat.inherit_from_default
++end
+diff --git a/patches/pxp-agent/gcc-13.patch b/patches/pxp-agent/gcc-13.patch
+new file mode 100644
+index 0000000..4b561e6
+--- /dev/null
++++ b/patches/pxp-agent/gcc-13.patch
+@@ -0,0 +1,12 @@
++diff --git a/lib/inc/pxp-agent/pxp_connector.hpp b/lib/inc/pxp-agent/pxp_connector.hpp
++index de36ce9..c77ca17 100644
++--- a/lib/inc/pxp-agent/pxp_connector.hpp
+++++ b/lib/inc/pxp-agent/pxp_connector.hpp
++@@ -3,6 +3,7 @@
++ #include <vector>
++ #include <string>
++ #include <functional>
+++#include <boost/cstdint.hpp>
++ 
++ namespace PCPClient {
++ struct ParsedChunks;

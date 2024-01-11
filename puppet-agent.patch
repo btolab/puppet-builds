@@ -1,0 +1,24 @@
+commit c49159a974d49a232a511b6c1b3787fe623111ee
+Author: Jeffrey Clark <h0tw1r3@users.noreply.github.com>
+Date:   Wed Jan 10 22:49:18 2024 -0600
+
+    (maint) add ubuntu 24.04 noble platform definitions
+
+diff --git a/configs/platforms/ubuntu-24.04-aarch64.rb b/configs/platforms/ubuntu-24.04-aarch64.rb
+new file mode 100644
+index 000000000..9c9a7ce01
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-aarch64.rb
+@@ -0,0 +1,3 @@
++platform "ubuntu-24.04-aarch64" do |plat|
++  plat.inherit_from_default
++end
+diff --git a/configs/platforms/ubuntu-24.04-amd64.rb b/configs/platforms/ubuntu-24.04-amd64.rb
+new file mode 100644
+index 000000000..7d253f1ed
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-amd64.rb
+@@ -0,0 +1,3 @@
++platform "ubuntu-24.04-amd64" do |plat|
++  plat.inherit_from_default
++end

@@ -1,0 +1,50 @@
+diff --git a/configs/components/rubygem-pdk.rb b/configs/components/rubygem-pdk.rb
+index 9c3a058..a7d5917 100644
+--- a/configs/components/rubygem-pdk.rb
++++ b/configs/components/rubygem-pdk.rb
+@@ -6,6 +6,8 @@ component 'rubygem-pdk' do |pkg, settings, platform|
+ 
+   pkg.environment 'PATH', settings[:gem_path_env] if platform.is_windows?
+ 
++  pkg.apply_patch 'resources/patches/gemspec.patch'
++
+   pkg.install do
+     [
+       "#{settings[:host_gem]} build pdk.gemspec",
+diff --git a/configs/platforms/ubuntu-24.04-aarch64.rb b/configs/platforms/ubuntu-24.04-aarch64.rb
+new file mode 100644
+index 0000000..9c9a7ce
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-aarch64.rb
+@@ -0,0 +1,3 @@
++platform "ubuntu-24.04-aarch64" do |plat|
++  plat.inherit_from_default
++end
+diff --git a/configs/platforms/ubuntu-24.04-amd64.rb b/configs/platforms/ubuntu-24.04-amd64.rb
+new file mode 100644
+index 0000000..7d253f1
+--- /dev/null
++++ b/configs/platforms/ubuntu-24.04-amd64.rb
+@@ -0,0 +1,3 @@
++platform "ubuntu-24.04-amd64" do |plat|
++  plat.inherit_from_default
++end
+diff --git a/resources/patches/gemspec.patch b/resources/patches/gemspec.patch
+new file mode 100644
+index 0000000..3807fd5
+--- /dev/null
++++ b/resources/patches/gemspec.patch
+@@ -0,0 +1,13 @@
++diff --git a/pdk.gemspec b/pdk.gemspec
++index f89871ac..69771038 100644
++--- a/pdk.gemspec
+++++ b/pdk.gemspec
++@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
++   spec.add_runtime_dependency 'tty-which', '~> 0.5'
++ 
++   # Analytics dependencies
++-  spec.add_runtime_dependency 'concurrent-ruby', '1.1.10'
+++  spec.add_runtime_dependency 'concurrent-ruby', '1.2.2'
++   spec.add_runtime_dependency 'facter', '~> 4.0'
++   spec.add_runtime_dependency 'httpclient', '~> 2.8.3'
++ 
